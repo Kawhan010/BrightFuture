@@ -1,0 +1,333 @@
+:root {
+    font-family:baloo2, sans-serif;
+    font-size: 14px;
+    color: #172554;
+    background: #EFF6FF;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    --navy: #172554;
+    --Royal: #1D4ED8;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --laranja: #F97316;
+    --amarelosol: #FACC15;
+    --verde: #16A34A;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    scroll-behavior: smooth;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.app-layout {
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1;
+    display: flex;
+    width: 260px;
+    flex-direction: column;
+    padding: 28px 18px 20px;
+    background: #fff;
+    border-right: 1px solid var(--line);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 8px;
+}
+
+.brand-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.brand-name {
+    color: var(--navy);
+    font-size: 20px;
+    font-weight: 750;
+    letter-spacing: -0.8px;
+}
+
+.brand-name strong {
+    color: #f97316;
+}
+
+.school-label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 27px 8px 34px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #22c55e;
+}
+
+.menu-heading {
+    margin: 0 10px 12px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+}
+
+.menu {
+    display: grid;
+    gap: 5px;
+}
+
+.menu-item {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    gap: 12px;
+    padding: 0 11px;
+    border-radius: 9px;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 550;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+    background: #eff6ff;
+    color: var(--blue);
+}
+
+.menu-item:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+.menu-item svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+}
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-top: auto;
+    padding: 17px 7px 0;
+    border-top: 1px solid #eef2f7;
+}
+
+.user-avatar {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 50%;
+    background: #dbeafe;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.user-info {
+    display: grid;
+    gap: 3px;
+    font-size: 13px;
+}
+
+.user-info span {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.main-content {
+    min-height: 100vh;
+    margin-left: 260px;
+    padding: 42px clamp(24px, 5vw, 72px);
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 34px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 0;
+    font-size: 28px;
+    letter-spacing: -0.8px;
+}
+
+.demo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: #475569;
+    font-size: 12px;
+}
+
+.demo-badge .status-dot {
+    width: 7px;
+    height: 7px;
+}
+
+.bemvindo-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 850px;
+    padding: 30px;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    background: linear-gradient(120deg, #fff 25%, #eff6ff 100%);
+    box-shadow: 0 10px 30px rgb(23 37 84 / 5%);
+}
+
+.welcome-mark {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 13px;
+    background: #dbeafe;
+    color: var(--blue);
+    font-size: 23px;
+}
+
+.bemvindo-card .eyebrow {
+    color: var(--blue);
+}
+
+h2 {
+    margin-bottom: 8px;
+    font-size: 21px;
+    letter-spacing: -0.4px;
+}
+
+.page-section {
+    max-width: 850px;
+    margin-bottom: 18px;
+    padding: 24px;
+    scroll-margin-top: 24px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.page-section p {
+    margin-bottom: 0;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+@media (max-width: 720px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
+        padding: 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .school-label {
+        margin: 16px 8px 20px;
+    }
+
+    .menu {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .menu-heading {
+        grid-column: 1 / -1;
+    }
+
+    .menu-item {
+        gap: 8px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+
+    .menu-item svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .sidebar-footer {
+        display: none;
+    }
+
+    .main-content {
+        min-height: auto;
+        margin-left: 0;
+        padding: 28px 18px;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 24px;
+    }
+
+    .page-section {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+}
