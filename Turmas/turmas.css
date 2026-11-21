@@ -1,0 +1,235 @@
+.menu-item.active {
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 650;
+}
+
+.classes-section {
+    max-width: 1000px;
+}
+
+.classes-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.classes-heading p {
+    margin-top: 6px;
+}
+
+.classes-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 11px 14px;
+    border-radius: 9px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    white-space: nowrap;
+}
+
+.classes-summary strong {
+    font-size: 19px;
+}
+
+.classes-summary span {
+    margin-right: 8px;
+    font-size: 11px;
+}
+
+.classes-summary span:last-child {
+    margin-right: 0;
+}
+
+.class-form {
+    margin-bottom: 12px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    background: #f8fafc;
+}
+
+.class-form label {
+    display: block;
+    margin-bottom: 7px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.class-form-row {
+    display: flex;
+    gap: 9px;
+}
+
+.class-form input {
+    width: min(100%, 300px);
+    min-height: 40px;
+    padding: 9px 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: #fff;
+    color: #172554;
+    font: inherit;
+}
+
+.class-form input:focus {
+    border-color: #1d4ed8;
+    outline: 2px solid rgb(29 78 216 / 15%);
+}
+
+.class-submit-button {
+    min-height: 40px;
+    padding: 8px 13px;
+    border: 0;
+    border-radius: 7px;
+    background: #1d4ed8;
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.class-submit-button:hover {
+    background: #1e40af;
+}
+
+.class-form p {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 11px;
+}
+
+.class-search {
+    display: block;
+    width: min(100%, 360px);
+    margin-bottom: 18px;
+}
+
+.class-search input {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    background: #fff;
+    color: #172554;
+    font: inherit;
+}
+
+.class-search input:focus {
+    border-color: #1d4ed8;
+    outline: 2px solid rgb(29 78 216 / 15%);
+}
+
+.class-message {
+    min-height: 20px;
+    margin: 8px 0;
+    font-size: 12px;
+}
+
+.class-message.error {
+    color: #b91c1c;
+}
+
+.class-message.success {
+    color: #15803d;
+}
+
+.classes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 14px;
+}
+
+.class-card {
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.class-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.class-card-header h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.class-card-header span {
+    color: #64748b;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.class-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.class-delete-button {
+    min-height: 32px;
+    padding: 5px 9px;
+    border: 0;
+    border-radius: 7px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+.classes-empty-state {
+    padding: 20px 0;
+    color: #64748b;
+    text-align: center;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+@media (max-width: 720px) {
+    .classes-heading {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .classes-summary {
+        width: fit-content;
+    }
+
+    .class-search {
+        width: 100%;
+    }
+
+    .class-form-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .class-form input {
+        width: 100%;
+    }
+}

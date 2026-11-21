@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#172554">
+    <title>Relatórios | Bright Future</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="relatorios.css">
+    <script src="relatorios.js" defer></script>
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar">
+            <a class="brand" href="../index.html#inicio" aria-label="Bright Future, início">
+                <img class="brand-logo" src="../assets/logo-5-brightfuture.png" alt="Bright Future">
+            </a>
+            <div class="school-label"><span class="status-dot" aria-hidden="true"></span>Secretaria escolar</div>
+            <nav class="menu" aria-label="Menu principal">
+                <p class="menu-heading">MENU</p>
+                <a class="menu-item" href="../index.html#inicio">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z"></path></svg>
+                    <span>Visão geral</span>
+                </a>
+                <a class="menu-item" href="../Alunos/alunos.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"></circle><path d="M2 21v-2a7 7 0 0 1 14 0v2M16 3.2a4 4 0 0 1 0 7.6M18 14a6 6 0 0 1 4 5.7V21"></path></svg>
+                    <span>Alunos</span>
+                </a>
+                <a class="menu-item" href="../Turmas/turmas.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M8 4v16M3 9h5M3 15h5M12 9h5M12 13h5"></path></svg>
+                    <span>Turmas</span>
+                </a>
+                <a class="menu-item" href="../Notas/notas.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"></path></svg>
+                    <span>Notas e frequência</span>
+                </a>
+                <a class="menu-item active" href="relatorios.html" aria-current="page">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h17M8 15l4-4 3 2 5-6"></path></svg>
+                    <span>Relatórios</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-avatar" aria-hidden="true">S</div>
+                <div class="user-info"><strong>Secretaria</strong><span>Equipe escolar</span></div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="page-header">
+                <div><p class="eyebrow">PAINEL DA ESCOLA</p><h1>Relatórios</h1></div>
+            </header>
+
+            <section class="page-section reports-section" aria-labelledby="reports-title">
+                <div class="reports-heading">
+                    <div>
+                        <h2 id="reports-title">Visão geral da escola</h2>
+                        <p>Consulte os principais indicadores e acompanhe a situação dos estudantes.</p>
+                    </div>
+                    <button id="printReportButton" class="report-primary-button" type="button">Imprimir relatório</button>
+                </div>
+
+                <div class="reports-filters">
+                    <label>
+                        Turma
+                        <select id="reportClassFilter">
+                            <option value="">Todas as turmas</option>
+                        </select>
+                    </label>
+                    <label>
+                        Período
+                        <select id="reportPeriodFilter">
+                            <option value="1º trimestre">1º trimestre</option>
+                            <option value="2º trimestre">2º trimestre</option>
+                            <option value="3º trimestre">3º trimestre</option>
+                        </select>
+                    </label>
+                </div>
+
+                <p id="reportsMessage" class="reports-message" role="status" aria-live="polite"></p>
+
+                <div class="report-summary-grid" aria-label="Resumo geral">
+                    <article class="report-summary-card students">
+                        <span>Alunos matriculados</span>
+                        <strong id="reportStudentCount">0</strong>
+                        <small>Na seleção atual</small>
+                    </article>
+                    <article class="report-summary-card classes">
+                        <span>Turmas</span>
+                        <strong id="reportClassCount">0</strong>
+                        <small>Com alunos cadastrados</small>
+                    </article>
+                    <article class="report-summary-card average">
+                        <span>Média geral</span>
+                        <strong id="reportAverage">—</strong>
+                        <small>Notas registradas</small>
+                    </article>
+                    <article class="report-summary-card attendance">
+                        <span>Frequência média</span>
+                        <strong id="reportAttendance">—</strong>
+                        <small>Presença estimada</small>
+                    </article>
+                </div>
+
+                <div class="report-columns">
+                    <article class="report-panel">
+                        <div class="report-panel-heading">
+                            <h3>Desempenho por turma</h3>
+                            <span id="reportRecordCount">0 registros</span>
+                        </div>
+                        <div class="report-table-wrap">
+                            <table class="report-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Turma</th>
+                                        <th scope="col">Alunos</th>
+                                        <th scope="col">Média</th>
+                                        <th scope="col">Frequência</th>
+                                        <th scope="col">Situação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="classReportBody"></tbody>
+                            </table>
+                            <p id="classReportEmpty" class="report-empty-state">Nenhuma turma encontrada.</p>
+                        </div>
+                    </article>
+
+                    <article class="report-panel">
+                        <div class="report-panel-heading">
+                            <h3>Estudantes para atenção</h3>
+                            <span>Nota menor que 7 ou frequência menor que 75%</span>
+                        </div>
+                        <div class="attention-list" id="attentionList"></div>
+                        <p id="attentionEmpty" class="report-empty-state">Nenhum estudante precisa de atenção neste período.</p>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
