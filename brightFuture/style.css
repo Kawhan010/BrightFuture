@@ -1,5 +1,5 @@
 :root {
-    font-family:baloo2, sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 14px;
     color: #172554;
     background: #EFF6FF;
@@ -7,6 +7,7 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     --navy: #172554;
+    --blue: #2563eb;
     --Royal: #1D4ED8;
     --muted: #64748b;
     --line: #e2e8f0;
@@ -66,6 +67,15 @@ a {
     font-weight: 800;
 }
 
+.brand-logo {
+    display: block;
+    width: 210px;
+    max-width: 100%;
+    height: 44px;
+    object-fit: contain;
+    object-position: left center;
+}
+
 .brand-name {
     color: var(--navy);
     font-size: 20px;
@@ -121,6 +131,11 @@ a {
 
 .menu-item:hover,
 .menu-item:focus-visible {
+    background: #eff6ff;
+    color: var(--blue);
+}
+
+.menu-item.active {
     background: #eff6ff;
     color: var(--blue);
 }
@@ -197,6 +212,12 @@ a {
 
 h1,
 h2,
+h3 {
+    font-family: "Baloo 2", "Open Sans", sans-serif;
+}
+
+h1,
+h2,
 p {
     margin-top: 0;
 }
@@ -256,6 +277,142 @@ h2 {
     margin-bottom: 8px;
     font-size: 21px;
     letter-spacing: -0.4px;
+}
+
+.welcome-panel {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    min-height: 230px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin: -24px -24px 24px;
+    padding: 42px 40px;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(135deg, #172554 0%, #1d4ed8 100%);
+    color: #fff;
+}
+
+.welcome-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 540px;
+}
+
+.welcome-copy .eyebrow {
+    color: #bfdbfe;
+}
+
+.welcome-copy h2 {
+    margin-bottom: 8px;
+    font-size: 32px;
+}
+
+.welcome-copy p:last-child {
+    max-width: 520px;
+    color: #dbeafe;
+    font-size: 16px;
+}
+
+.welcome-logo-wrap {
+    display: grid;
+    width: 280px;
+    height: 138px;
+    flex: 0 1 280px;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 45%);
+    border-radius: 16px;
+    background: #f8fafc;
+    box-shadow: 0 12px 28px rgb(15 23 42 / 18%);
+}
+
+.welcome-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.dashboard-card {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.dashboard-card-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 9px;
+}
+
+.dashboard-card-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.dashboard-card-icon.students {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.dashboard-card-icon.classes {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+.dashboard-card-icon.average {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.dashboard-card-icon.attendance {
+    background: #ffedd5;
+    color: #ea580c;
+}
+
+.dashboard-card div:last-child {
+    display: grid;
+    min-width: 0;
+}
+
+.dashboard-card span {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dashboard-card strong {
+    margin: 2px 0 1px;
+    color: var(--navy);
+    font-size: 23px;
+    line-height: 1.1;
+}
+
+.dashboard-card small {
+    color: #94a3b8;
+    font-size: 10px;
 }
 
 .page-section {
@@ -327,7 +484,36 @@ h2 {
         padding: 20px;
     }
 
+    .welcome-panel {
+        margin: -20px -20px 20px;
+        padding: 24px 20px;
+    }
+
+    .welcome-logo-wrap {
+        width: 220px;
+        max-width: 48%;
+        height: 120px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     h2 {
         font-size: 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .welcome-panel {
+        align-items: flex-start;
+    }
+
+    .welcome-logo-wrap {
+        display: none;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
     }
 }
