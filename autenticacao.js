@@ -1,5 +1,4 @@
 "use strict";
-// Usuários de exemplo da atividade acadêmica. Não é autenticação segura.
 (function () {
     const SESSION_KEY = "brightfuture.sessao.v1";
     const USERS = [

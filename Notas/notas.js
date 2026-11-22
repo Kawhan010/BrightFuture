@@ -49,8 +49,6 @@ function showMessage(text, type = "") {
     message.className = `grades-message ${type}`;
 }
 
-// Conta as chamadas salvas para calcular a frequência real do trimestre.
-// Uma chamada ainda não salva pode substituir o valor do dia atual na tela.
 function getAttendance(studentId, currentStatus) {
     const prefix = periodKey() + "|";
     let present = 0;
@@ -180,7 +178,6 @@ function renderGrades() {
         row.querySelectorAll(".attendance-toggle-button").forEach(button => {
             button.addEventListener("click", () => {
                 const current = row.querySelector(".attendance-status");
-                // Clicar novamente desmarca a presença/falta.
                 current.value = current.value === button.dataset.status ? "" : button.dataset.status;
                 updateRow(row);
             });

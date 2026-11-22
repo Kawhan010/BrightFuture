@@ -269,6 +269,5 @@
     }
 }
 
-/* Ação de arquivamento, mantendo o estilo dos botões originais. */
 .student-action-button.archive { color: #7c5607; background: #fff7db; border-color: #eedaa4; }
 .student-action-button.restore { color: #186d40; background: #ecfdf3; border-color: #b8e8ca; }

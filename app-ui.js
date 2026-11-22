@@ -1,5 +1,4 @@
 "use strict";
-// Nome e menu do usuário logado, usados nas cinco páginas já existentes.
 document.addEventListener("DOMContentLoaded", () => {
     const auth = window.BrightAuth;
     const user = auth?.user;
@@ -27,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const footer = document.querySelector(".sidebar-footer");
     const label = document.querySelector(".school-label");
     if (label) {
-        // O indicador verde do painel é preservado.
         label.innerHTML = '<span class="status-dot" aria-hidden="true"></span>' + user.cargo;
     }
     if (avatar) avatar.textContent = user.nome.split(" ").map(p => p[0]).slice(0, 2).join("");

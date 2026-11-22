@@ -38,7 +38,7 @@ function renderDashboard() {
         Object.keys(records).forEach(key => {
             if (!key.startsWith(student.turma + "|")) return;
             const parts = key.split("|");
-            if (parts.length !== 3) return; // Somente registros por dia
+            if (parts.length !== 3) return;
             const date = parts[2];
             const now = new Date();
             const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -76,7 +76,6 @@ function renderDashboard() {
         link.textContent = "Consultar meu boletim →";
         document.querySelector(".dashboard-grid").after(link);
         if (student) {
-            // Na área de aluno e responsável, a frequência é geral, não apenas do mês.
             let p = 0, t = 0;
             Object.keys(records).forEach(key => {
                 if (!key.startsWith(student.turma + "|") || key.split("|").length !== 3) return;

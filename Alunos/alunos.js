@@ -1,6 +1,5 @@
 "use strict";
 
-// Dados salvos no navegador com localStorage.
 const STUDENT_KEY = "brightfuture.alunos.v2";
 const CLASS_KEY = "brightfuture.turmas.v2";
 const GRADE_KEY = "brightfuture.notas-frequencia.v2";
@@ -26,7 +25,6 @@ const saveButton = document.querySelector("#saveStudentButton");
 const cancelButton = document.querySelector("#cancelStudentEdit");
 const message = document.querySelector("#studentMessage");
 
-// A classe Aluno reúne os dados e ações de cada matrícula.
 class Aluno {
     constructor(dados) {
         this.id = dados.id;
@@ -46,7 +44,6 @@ class Aluno {
     restaurar() { this.arquivado = false; }
 }
 
-// Ao carregar JSON, recriamos os objetos da classe Aluno.
 const auth = window.BrightAuth;
 const canEdit = auth.canManageStudents();
 let students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]").map(dados => new Aluno(dados)).filter(student => auth.canSeeStudent(student));

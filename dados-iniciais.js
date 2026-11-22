@@ -1,7 +1,5 @@
 "use strict";
 
-// Registros totalmente inventados para a apresentação acadêmica.
-// Só são criados na PRIMEIRA execução: nunca substituem os dados cadastrados.
 (function iniciarEscola() {
     const alunoKey = "brightfuture.alunos.v2";
     const turmaKey = "brightfuture.turmas.v2";
@@ -26,7 +24,7 @@
         ["Valentina Souza", "2010-04-07", "2º ano EM A", "Juliana Souza", "Mãe"],
         ["Rafael Nunes", "2008-01-15", "2º ano EM A", "Roberto Nunes", "Pai"]
     ];
-    // Todos os CPFs abaixo têm dígitos de verificação deliberadamente inválidos.
+
     const cpfs = ["124.357.689-00", "245.368.791-01", "356.479.812-02", "467.581.923-03",
         "578.692.134-04", "689.713.245-05", "791.824.356-06", "812.935.467-07",
         "923.146.578-08", "134.257.689-09", "245.369.871-10", "356.471.982-11", "467.582.193-12"];
@@ -43,7 +41,7 @@
     }));
 
     const registros = {};
-    // Notas trimestrais (sem serem sobrescritas ao trocar a data da chamada).
+
     const notas = [8.8, 7.4, 9.1, 8.2, 6.4, 8.7, 7.9, 5.8, 8.5, 9.2, 7.6, 6.8, 8.0];
     const periodos = ["1º trimestre", "2º trimestre", "3º trimestre"];
     alunos.forEach((aluno, i) => {
@@ -55,7 +53,6 @@
         });
     });
 
-    // Chamada de alguns dias letivos deste mês para médias de frequência coerentes.
     const hoje = new Date();
     const dias = [];
     for (let dia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
