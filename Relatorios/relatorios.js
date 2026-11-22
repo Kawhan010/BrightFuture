@@ -3,7 +3,6 @@
 const STUDENT_KEY = "brightfuture.alunos.v1";
 const CLASS_KEY = "brightfuture.turmas.v1";
 const GRADE_KEY = "brightfuture.notas-frequencia.v1";
-const TOTAL_LESSONS = 20;
 
 const classFilter = document.querySelector("#reportClassFilter");
 const periodFilter = document.querySelector("#reportPeriodFilter");
@@ -19,192 +18,130 @@ const recordCount = document.querySelector("#reportRecordCount");
 const attentionList = document.querySelector("#attentionList");
 const attentionEmpty = document.querySelector("#attentionEmpty");
 
-const students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]");
-const savedClasses = JSON.parse(localStorage.getItem(CLASS_KEY) || "[]");
+const students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]").filter(student => !student.arquivado);
+const classes = JSON.parse(localStorage.getItem(CLASS_KEY) || "[]");
 const gradeRecords = JSON.parse(localStorage.getItem(GRADE_KEY) || "{}");
 
 function getClassNames() {
-    const names = [...savedClasses];
-    students.forEach(student => names.push(student.turma));
-    return [...new Set(names.filter(name => name && name.trim()).map(name => name.trim()))]
-        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+    const names = [...classes, ...students.map(student => student.turma)];
+    return [...new Set(names.filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
 }
 
-function getAttendance(absences) {
-    if (absences === "" || absences === undefined) {
-        return null;
-    }
+function getGrade(value) {
+    if (value === "" || value === null || value === undefined) return null;
+    const number = Number(String(value).replace(",", "."));
+    return Number.isFinite(number) && number >= 0 && number <= 10 ? number : null;
+}
 
-    function getGradeNumber(value) {
-        if (value === "" || value === null || value === undefined) {
-            return null;
+function getAttendance(className, period, studentId) {
+    const prefix = `${className}|${period}|`;
+    let present = 0;
+    let total = 0;
+    Object.keys(gradeRecords).forEach(key => {
+        if (!key.startsWith(prefix)) return;
+        const status = gradeRecords[key][studentId]?.status;
+        if (status === "present" || status === "absent") {
+            total++;
+            if (status === "present") present++;
         }
-        const grade = Number(String(value).replace(",", "."));
-        return Number.isNaN(grade) ? null : grade;
-    }
-    const value = Number(absences);
-    if (Number.isNaN(value)) {
-        return null;
-    }
-    const validAbsences = Math.max(0, Math.min(TOTAL_LESSONS, value));
-    return ((TOTAL_LESSONS - validAbsences) / TOTAL_LESSONS) * 100;
+    });
+    return total ? (100 * present / total) : null;
+}
+
+function formatNumber(value) {
+    return value === null ? "—" : value.toFixed(1).replace(".", ",");
+}
+
+function averageOf(numbers) {
+    return numbers.length ? numbers.reduce((a, b) => a + b, 0) / numbers.length : null;
 }
 
 function getStatus(classAverage, classAttendance) {
-    if (classAverage === null && classAttendance === null) {
-        return ["Pendente", "revision"];
-    }
-    if (classAverage !== null && classAverage < 7) {
-        return ["Revisão", "revision"];
-    }
-    if (classAttendance !== null && classAttendance < 75) {
-        return ["Revisão", "revision"];
-    }
+    if (classAverage === null && classAttendance === null) return ["Pendente", "revision"];
+    if (classAverage !== null && classAverage < 7) return ["Revisão", "revision"];
+    if (classAttendance !== null && classAttendance < 75) return ["Revisão", "revision"];
     return ["No percurso", "approved"];
 }
 
 function renderReport() {
     const selectedClass = classFilter.value;
     const period = periodFilter.value;
-    const visibleNames = selectedClass ? [selectedClass] : getClassNames();
-    const visibleStudents = selectedClass
-        ? students.filter(student => student.turma === selectedClass)
-        : students;
-
+    const visibleStudents = selectedClass ? students.filter(item => item.turma === selectedClass) : students;
+    const names = selectedClass ? [selectedClass] : getClassNames();
     const allGrades = [];
     const allAttendances = [];
     const attentionStudents = [];
-    const reportRows = [];
-    let recordsSaved = 0;
+    let savedStudents = 0;
 
-    visibleNames.forEach(className => {
-        const classStudents = visibleStudents.filter(student =>
-            student.turma.toLowerCase() === className.toLowerCase()
-        );
+    tableBody.replaceChildren();
+    names.forEach(name => {
+        const classStudents = visibleStudents.filter(student => student.turma === name);
+        if (classStudents.length === 0) return;
         const grades = [];
-        const attendances = [];
+        const frequencies = [];
+        const periodGrades = gradeRecords[`${name}|${period}`] || {};
 
         classStudents.forEach(student => {
-            const record = gradeRecords[`${className}|${period}`]?.[student.id];
-            if (!record) {
-                return;
-            }
+            const grade = getGrade(periodGrades[student.id]?.nota);
+            const frequency = getAttendance(name, period, student.id);
+            if (grade !== null) { grades.push(grade); allGrades.push(grade); }
+            if (frequency !== null) { frequencies.push(frequency); allAttendances.push(frequency); }
+            if (grade !== null || frequency !== null) savedStudents++;
 
-            const grade = getGradeNumber(record.nota);
-            const studentAttendance = getAttendance(record.faltas);
-
-            if (grade !== null && !Number.isNaN(grade)) {
-                grades.push(grade);
-                allGrades.push(grade);
-                recordsSaved++;
-            }
-            if (studentAttendance !== null) {
-                attendances.push(studentAttendance);
-                allAttendances.push(studentAttendance);
-            }
-
-            if ((grade !== null && grade < 7) ||
-                (studentAttendance !== null && studentAttendance < 75)) {
+            if ((grade !== null && grade < 7) || (frequency !== null && frequency < 75)) {
                 const reasons = [];
-                if (grade !== null && grade < 7) {
-                    reasons.push(`nota ${grade.toFixed(1).replace(".", ",")}`);
-                }
-                if (studentAttendance !== null && studentAttendance < 75) {
-                    reasons.push(`frequência ${studentAttendance.toFixed(0)}%`);
-                }
-                attentionStudents.push({
-                    name: student.nome,
-                    className,
-                    reason: reasons.join(" • ")
-                });
+                if (grade !== null && grade < 7) reasons.push("nota " + formatNumber(grade));
+                if (frequency !== null && frequency < 75) reasons.push("frequência " + frequency.toFixed(0) + "%");
+                attentionStudents.push({name: student.nome, className: name, reason: reasons.join(" • ")});
             }
         });
 
-        if (classStudents.length > 0) {
-            const classAverage = grades.length
-                ? grades.reduce((sum, value) => sum + value, 0) / grades.length
-                : null;
-            const classAttendance = attendances.length
-                ? attendances.reduce((sum, value) => sum + value, 0) / attendances.length
-                : null;
-
-            reportRows.push({
-                name: className,
-                students: classStudents.length,
-                average: classAverage,
-                attendance: classAttendance
-            });
-        }
+        const classAverage = averageOf(grades);
+        const classFrequency = averageOf(frequencies);
+        const [status, type] = getStatus(classAverage, classFrequency);
+        const tr = document.createElement("tr");
+        for (let i = 0; i < 5; i++) tr.append(document.createElement("td"));
+        tr.children[0].textContent = name;
+        tr.children[1].textContent = String(classStudents.length);
+        tr.children[2].textContent = formatNumber(classAverage);
+        tr.children[3].textContent = classFrequency === null ? "—" : classFrequency.toFixed(0) + "%";
+        const badge = document.createElement("span");
+        badge.className = `report-status ${type}`;
+        badge.textContent = status;
+        tr.children[4].append(badge);
+        tableBody.append(tr);
     });
 
     studentCount.textContent = String(visibleStudents.length);
-    classCount.textContent = String(reportRows.length);
-
-    const overallAverage = allGrades.length
-        ? allGrades.reduce((sum, value) => sum + value, 0) / allGrades.length
-        : null;
-    const overallAttendance = allAttendances.length
-        ? allAttendances.reduce((sum, value) => sum + value, 0) / allAttendances.length
-        : null;
-
-    average.textContent = overallAverage === null
-        ? "—"
-        : overallAverage.toFixed(1).replace(".", ",");
-    attendance.textContent = overallAttendance === null
-        ? "—"
-        : `${overallAttendance.toFixed(0)}%`;
-    recordCount.textContent = `${recordsSaved} ${recordsSaved === 1 ? "registro" : "registros"}`;
-    message.textContent = recordsSaved === 0
-        ? "Ainda não há notas registradas para este período."
-        : `Relatório atualizado para o ${period}.`;
-
-    tableBody.replaceChildren();
-    reportRows.forEach(row => {
-        const tr = document.createElement("tr");
-        const [status, statusType] = getStatus(row.average, row.attendance);
-        tr.innerHTML = `
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><span class="report-status"></span></td>
-        `;
-        tr.children[0].textContent = row.name;
-        tr.children[1].textContent = String(row.students);
-        tr.children[2].textContent = row.average === null
-            ? "—"
-            : row.average.toFixed(1).replace(".", ",");
-        tr.children[3].textContent = row.attendance === null
-            ? "—"
-            : `${row.attendance.toFixed(0)}%`;
-        tr.querySelector(".report-status").textContent = status;
-        tr.querySelector(".report-status").className = `report-status ${statusType}`;
-        tableBody.append(tr);
-    });
-    tableEmpty.hidden = reportRows.length > 0;
+    classCount.textContent = String(tableBody.children.length);
+    average.textContent = formatNumber(averageOf(allGrades));
+    const averageFrequency = averageOf(allAttendances);
+    attendance.textContent = averageFrequency === null ? "—" : averageFrequency.toFixed(0) + "%";
+    recordCount.textContent = `${savedStudents} ${savedStudents === 1 ? "aluno com registro" : "alunos com registros"}`;
+    message.textContent = savedStudents ? `Dados do ${period}.` : "Ainda não há notas ou chamadas neste período.";
+    tableEmpty.hidden = tableBody.children.length > 0;
 
     attentionList.replaceChildren();
     attentionStudents.forEach(item => {
-        const element = document.createElement("div");
-        element.className = "attention-item";
-        element.innerHTML = "<strong></strong><span></span><span class=\"attention-reason\"></span>";
-        element.children[0].textContent = item.name;
-        element.children[1].textContent = item.className;
-        element.children[2].textContent = item.reason;
-        attentionList.append(element);
+        const div = document.createElement("div");
+        div.className = "attention-item";
+        const name = document.createElement("strong");
+        name.textContent = item.name;
+        const className = document.createElement("span");
+        className.textContent = item.className;
+        const reason = document.createElement("span");
+        reason.className = "attention-reason";
+        reason.textContent = item.reason;
+        div.append(name, className, reason);
+        attentionList.append(div);
     });
     attentionEmpty.hidden = attentionStudents.length > 0;
 }
 
-getClassNames().forEach(name => {
-    const option = document.createElement("option");
-    option.value = name;
-    option.textContent = name;
-    classFilter.append(option);
-});
-
+getClassNames().forEach(name => classFilter.add(new Option(name, name)));
+const month = new Date().getMonth();
+periodFilter.value = month < 4 ? "1º trimestre" : month < 8 ? "2º trimestre" : "3º trimestre";
 classFilter.addEventListener("change", renderReport);
 periodFilter.addEventListener("change", renderReport);
 printButton.addEventListener("click", () => window.print());
-
 renderReport();

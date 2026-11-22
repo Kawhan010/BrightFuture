@@ -3,7 +3,6 @@
 const STUDENT_KEY = "brightfuture.alunos.v1";
 const CLASS_KEY = "brightfuture.turmas.v1";
 const GRADE_KEY = "brightfuture.notas-frequencia.v1";
-const TOTAL_LESSONS = 20;
 
 const classFilter = document.querySelector("#classFilter");
 const periodFilter = document.querySelector("#periodFilter");
@@ -21,77 +20,26 @@ const attentionCount = document.querySelector("#attentionCount");
 const markAllPresent = document.querySelector("#markAllPresent");
 const markAllAbsent = document.querySelector("#markAllAbsent");
 
-let students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]");
-let classes = JSON.parse(localStorage.getItem(CLASS_KEY) || "[]");
+const students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]");
+const classes = JSON.parse(localStorage.getItem(CLASS_KEY) || "[]");
 let gradeRecords = JSON.parse(localStorage.getItem(GRADE_KEY) || "{}");
 
-function getClassNames() {
-    const names = [...classes];
-    students.forEach(student => names.push(student.turma));
-    return [...new Set(names.filter(name => name && name.trim()).map(name => name.trim()))]
-        .sort((a, b) => a.localeCompare(b, "pt-BR"));
+function periodKey() {
+    return `${classFilter.value}|${periodFilter.value}`;
 }
 
-function recordKey() {
-    return `${classFilter.value}|${periodFilter.value}|${attendanceDate.value}`;
+function dayKey() {
+    return `${periodKey()}|${attendanceDate.value}`;
 }
 
-function getAccumulatedAbsences(studentId) {
-    const prefix = `${classFilter.value}|${periodFilter.value}|`;
-    let total = 0;
-
-    Object.keys(gradeRecords).forEach(key => {
-        if (!key.startsWith(prefix)) {
-            return;
-        }
-        const record = gradeRecords[key][studentId];
-        if (record && record.status === "absent") {
-            total++;
-        }
-    });
-
-    const legacy = gradeRecords[`${classFilter.value}|${periodFilter.value}`]?.[studentId];
-    if (legacy && Number(legacy.faltas) > total) {
-        total = Number(legacy.faltas);
-    }
-    return total;
+function getGrade(value) {
+    if (value === "" || value === undefined || value === null) return null;
+    const number = Number(String(value).replace(",", "."));
+    return Number.isFinite(number) && number >= 0 && number <= 10 ? number : null;
 }
 
-function getGradeNumber(value) {
-    if (value === "" || value === null || value === undefined) {
-        return null;
-    }
-    const grade = Number(String(value).replace(",", "."));
-    return Number.isNaN(grade) ? null : grade;
-}
-
-function formatGrade(value) {
-    const grade = getGradeNumber(value);
-    return grade === null ? "" : grade.toFixed(1).replace(".", ",");
-}
-
-function limitGradeInput(input) {
-    input.value = input.value
-        .replace(".", ",")
-        .replace(/[^\d,]/g, "")
-        .replace(/,{2,}/g, ",");
-
-    let grade = getGradeNumber(input.value);
-    if (grade !== null && grade > 10) {
-        grade = 10;
-        input.value = "10,0";
-    }
-    if (grade !== null && grade < 0) {
-        input.value = "0,0";
-    }
-}
-
-function attendance(absences) {
-    const value = Number(absences);
-    if (!absences || Number.isNaN(value)) {
-        return null;
-    }
-    return ((TOTAL_LESSONS - Math.max(0, Math.min(TOTAL_LESSONS, value))) / TOTAL_LESSONS) * 100;
+function formatGrade(number) {
+    return number === null ? "" : number.toFixed(1).replace(".", ",");
 }
 
 function showMessage(text, type = "") {
@@ -99,59 +47,61 @@ function showMessage(text, type = "") {
     message.className = `grades-message ${type}`;
 }
 
-function getStatus(grade, studentAttendance) {
-    if (grade === null || studentAttendance === null) {
-        return ["Pendente", "revision"];
-    }
-    if (grade >= 7 && studentAttendance >= 75) {
-        return ["Aprovado", "approved"];
-    }
-    if (grade < 5 || studentAttendance < 75) {
-        return ["Reprovado", "reproved"];
-    }
+// Conta as chamadas salvas para calcular a frequência real do trimestre.
+// Uma chamada ainda não salva pode substituir o valor do dia atual na tela.
+function getAttendance(studentId, currentStatus) {
+    const prefix = periodKey() + "|";
+    let present = 0;
+    let absent = 0;
+    let foundToday = false;
+
+    Object.keys(gradeRecords).forEach(key => {
+        if (!key.startsWith(prefix)) return;
+        const record = gradeRecords[key][studentId];
+        let status = record ? record.status : "";
+        if (key === dayKey() && currentStatus !== undefined) {
+            status = currentStatus;
+            foundToday = true;
+        }
+        if (status === "present") present++;
+        if (status === "absent") absent++;
+    });
+
+    if (!foundToday && currentStatus === "present") present++;
+    if (!foundToday && currentStatus === "absent") absent++;
+    return {present, absent, percentage: present + absent ? 100 * present / (present + absent) : null};
+}
+
+function getStatus(grade, percentage) {
+    if (grade === null || percentage === null) return ["Pendente", "revision"];
+    if (grade >= 7 && percentage >= 75) return ["Aprovado", "approved"];
+    if (grade < 5 || percentage < 75) return ["Reprovado", "reproved"];
     return ["Revisar", "revision"];
 }
 
 function updateSummary() {
     const grades = [];
-    const attendances = [];
+    const frequencies = [];
     let present = 0;
     let absent = 0;
     let attention = 0;
 
     tableBody.querySelectorAll("tr").forEach(row => {
-        const gradeInput = row.querySelector(".grade-input");
-        const absenceInput = row.querySelector(".absence-input");
-        const statusInput = row.querySelector(".attendance-status");
-        const grade = getGradeNumber(gradeInput.value);
-        const studentAttendance = attendance(absenceInput.value);
-
-        if (grade !== null) {
-            grades.push(grade);
-        }
-        if (studentAttendance !== null) {
-            attendances.push(studentAttendance);
-        }
-        if (statusInput.value === "present") {
-            present++;
-        } else if (statusInput.value === "absent") {
-            absent++;
-        }
-        if ((grade !== null && grade < 7) ||
-            (studentAttendance !== null && studentAttendance < 75)) {
-            attention++;
-        }
+        const studentId = row.dataset.studentId;
+        const grade = getGrade(row.querySelector(".grade-input").value);
+        const status = row.querySelector(".attendance-status").value;
+        const data = getAttendance(studentId, status);
+        if (grade !== null) grades.push(grade);
+        if (data.percentage !== null) frequencies.push(data.percentage);
+        if (status === "present") present++;
+        if (status === "absent") absent++;
+        if ((grade !== null && grade < 7) || (data.percentage !== null && data.percentage < 75)) attention++;
     });
 
-    const average = grades.length
-        ? grades.reduce((sum, value) => sum + value, 0) / grades.length
-        : null;
-    const averageAttendance = attendances.length
-        ? attendances.reduce((sum, value) => sum + value, 0) / attendances.length
-        : null;
-
-    classAverage.textContent = average === null ? "—" : average.toFixed(1).replace(".", ",");
-    classAttendance.textContent = averageAttendance === null ? "—" : `${averageAttendance.toFixed(0)}%`;
+    classAverage.textContent = grades.length
+        ? formatGrade(grades.reduce((a, b) => a + b, 0) / grades.length) : "—";
+    classAttendance.textContent = frequencies.length
+        ? (frequencies.reduce((a, b) => a + b, 0) / frequencies.length).toFixed(0) + "%" : "—";
     evaluatedCount.textContent = String(grades.length);
     presentCount.textContent = String(present);
     absentCount.textContent = String(absent);
@@ -160,93 +110,71 @@ function updateSummary() {
 
 function updateRow(row) {
     const gradeInput = row.querySelector(".grade-input");
-    const absenceInput = row.querySelector(".absence-input");
-    const attendanceCell = row.querySelector(".attendance-value");
-    const statusBadge = row.querySelector(".status-badge");
-    const presentButton = row.querySelector(".attendance-toggle-button.present");
-    const absentButton = row.querySelector(".attendance-toggle-button.absent");
-    const statusInput = row.querySelector(".attendance-status");
-    const absenceCount = row.querySelector(".attendance-count");
-
-    const grade = getGradeNumber(gradeInput.value);
-    const studentAttendance = attendance(absenceInput.value);
-    attendanceCell.textContent = studentAttendance === null
-        ? "—"
-        : `${studentAttendance.toFixed(0)}%`;
-
-    const [label, type] = getStatus(grade, studentAttendance);
-    statusBadge.textContent = label;
-    statusBadge.className = `status-badge ${type}`;
-    presentButton.classList.toggle("active", statusInput.value === "present");
-    absentButton.classList.toggle("active", statusInput.value === "absent");
-    const totalFaltas = Number(absenceInput.value) || 0;
-    absenceCount.textContent = `Faltas acumuladas: ${totalFaltas}`;
+    const status = row.querySelector(".attendance-status").value;
+    const grade = getGrade(gradeInput.value);
+    const data = getAttendance(row.dataset.studentId, status);
+    row.querySelector(".attendance-value").textContent = data.percentage === null
+        ? "—" : data.percentage.toFixed(0) + "%";
+    row.querySelector(".attendance-count").textContent = `Faltas no trimestre: ${data.absent}`;
+    const [label, type] = getStatus(grade, data.percentage);
+    const badge = row.querySelector(".status-badge");
+    badge.textContent = label;
+    badge.className = `status-badge ${type}`;
+    row.querySelector(".attendance-toggle-button.present").classList.toggle("active", status === "present");
+    row.querySelector(".attendance-toggle-button.absent").classList.toggle("active", status === "absent");
     updateSummary();
 }
 
 function renderGrades() {
-    const selectedClass = classFilter.value;
-    const filteredStudents = students.filter(student =>
-        student.turma.toLowerCase() === selectedClass.toLowerCase()
+    const activeStudents = students.filter(student =>
+        !student.arquivado && student.turma === classFilter.value
     );
-    const saved = gradeRecords[recordKey()] || {};
+    const grades = gradeRecords[periodKey()] || {};
+    const savedDay = gradeRecords[dayKey()] || {};
 
     tableBody.replaceChildren();
-
-    filteredStudents.forEach(student => {
-        const values = saved[student.id] || { nota: "", faltas: "" };
-        const accumulatedAbsences = getAccumulatedAbsences(student.id);
-        if (!saved[student.id] && accumulatedAbsences > 0) {
-            values.faltas = String(accumulatedAbsences);
-        }
+    activeStudents.forEach(student => {
+        const grade = getGrade(grades[student.id]?.nota);
+        const call = savedDay[student.id] || {};
         const row = document.createElement("tr");
+        row.dataset.studentId = student.id;
         row.innerHTML = `
             <td></td>
-            <td><input class="grade-input" type="text" inputmode="decimal" maxlength="4" placeholder="0,0" value="${formatGrade(values.nota)}" aria-label="Nota de ${student.nome} entre 0 e 10"></td>
+            <td><input class="grade-input" type="text" inputmode="decimal" maxlength="4" placeholder="0,0"></td>
             <td>
-                <input class="absence-input" type="hidden" value="${accumulatedAbsences}">
-                <input class="attendance-status" type="hidden" value="${values.status || ""}">
+                <input class="attendance-status" type="hidden">
                 <div class="attendance-toggle">
                     <button type="button" class="attendance-toggle-button present" data-status="present">Presente</button>
                     <button type="button" class="attendance-toggle-button absent" data-status="absent">Falta</button>
                 </div>
-                <span class="attendance-count">Faltas acumuladas: 0</span>
+                <span class="attendance-count"></span>
             </td>
-            <td><input class="justification-input" type="text" maxlength="120" placeholder="Ex.: consulta médica" aria-label="Justificativa de ${student.nome}"></td>
+            <td><input class="justification-input" type="text" maxlength="120" placeholder="Ex.: consulta médica"></td>
             <td class="attendance-value">—</td>
             <td><span class="status-badge revision">Pendente</span></td>
         `;
         row.children[0].textContent = student.nome;
-        row.querySelector(".grade-input").dataset.studentId = student.id;
-        row.querySelector(".absence-input").dataset.studentId = student.id;
-        row.querySelector(".justification-input").value = values.justificativa || "";
+        row.querySelector(".grade-input").value = formatGrade(grade);
+        row.querySelector(".grade-input").setAttribute("aria-label", `Nota trimestral de ${student.nome}`);
+        row.querySelector(".attendance-status").value = call.status || "";
+        row.querySelector(".justification-input").value = call.justificativa || "";
+        row.querySelector(".justification-input").setAttribute("aria-label", `Justificativa de ${student.nome}`);
 
         const gradeInput = row.querySelector(".grade-input");
         gradeInput.addEventListener("input", () => {
-            limitGradeInput(gradeInput);
+            gradeInput.value = gradeInput.value.replace(".", ",").replace(/[^\d,]/g, "");
             updateRow(row);
         });
         gradeInput.addEventListener("blur", () => {
-            limitGradeInput(gradeInput);
-            gradeInput.value = gradeInput.value === ""
-                ? ""
-                : formatGrade(gradeInput.value);
+            if (getGrade(gradeInput.value) !== null) gradeInput.value = formatGrade(getGrade(gradeInput.value));
             updateRow(row);
         });
 
         row.querySelectorAll(".attendance-toggle-button").forEach(button => {
             button.addEventListener("click", () => {
-                const absenceInput = row.querySelector(".absence-input");
-                const statusInput = row.querySelector(".attendance-status");
-                if (button.dataset.status === "present") {
-                    statusInput.value = "present";
-                } else {
-                    if (statusInput.value !== "absent") {
-                        const currentAbsences = Number(absenceInput.value) || 0;
-                        absenceInput.value = String(currentAbsences + 1);
-                    }
-                    statusInput.value = "absent";
-                }
+                const current = row.querySelector(".attendance-status");
+                // Clicar novamente desmarca a presença/falta.
+                current.value = current.value === button.dataset.status ? "" : button.dataset.status;
                 updateRow(row);
             });
         });
@@ -254,98 +182,75 @@ function renderGrades() {
         updateRow(row);
     });
 
-    emptyState.hidden = filteredStudents.length > 0;
-    saveButton.disabled = filteredStudents.length === 0;
-    markAllPresent.disabled = filteredStudents.length === 0;
-    markAllAbsent.disabled = filteredStudents.length === 0;
+    emptyState.textContent = classFilter.value ? "Esta turma não tem alunos matriculados." : "Selecione uma turma para visualizar os alunos.";
+    emptyState.hidden = activeStudents.length > 0;
+    saveButton.disabled = activeStudents.length === 0;
+    markAllPresent.disabled = activeStudents.length === 0;
+    markAllAbsent.disabled = activeStudents.length === 0;
     updateSummary();
 }
 
 saveButton.addEventListener("click", () => {
-    if (!attendanceDate.value) {
-        showMessage("Selecione o dia da chamada.", "error");
+    if (!classFilter.value || !attendanceDate.value) {
+        showMessage("Selecione a turma e o dia da chamada.", "error");
         return;
     }
 
-    const records = {};
+    const grades = {...(gradeRecords[periodKey()] || {})};
+    const dailyCalls = {...(gradeRecords[dayKey()] || {})};
     let invalid = false;
-
     tableBody.querySelectorAll("tr").forEach(row => {
-        const gradeInput = row.querySelector(".grade-input");
-        const absenceInput = row.querySelector(".absence-input");
-        const statusInput = row.querySelector(".attendance-status");
-        const justificationInput = row.querySelector(".justification-input");
-        const grade = getGradeNumber(gradeInput.value);
-        const absences = absenceInput.value === "" ? null : Number(absenceInput.value);
+        const studentId = row.dataset.studentId;
+        const gradeText = row.querySelector(".grade-input").value.trim();
+        const grade = getGrade(gradeText);
+        if (gradeText !== "" && grade === null) invalid = true;
 
-        if ((grade !== null && (grade < 0 || grade > 10)) ||
-            (absences !== null && (absences < 0 || absences > 20))) {
-            invalid = true;
-        }
+        if (grade === null) delete grades[studentId];
+        else grades[studentId] = {nota: formatGrade(grade)};
 
-        records[gradeInput.dataset.studentId] = {
-            nota: grade === null ? "" : formatGrade(grade),
-            faltas: absenceInput.value,
-            status: statusInput.value,
-            justificativa: justificationInput.value.trim()
-        };
+        const status = row.querySelector(".attendance-status").value;
+        const justification = row.querySelector(".justification-input").value.trim();
+        if (status || justification) dailyCalls[studentId] = {status, justificativa: justification};
+        else delete dailyCalls[studentId];
     });
 
     if (invalid) {
-        showMessage("A nota deve ficar entre 0 e 10 e as faltas entre 0 e 20.", "error");
+        showMessage("Digite notas entre 0 e 10. Exemplo: 8,5.", "error");
         return;
     }
-
-    gradeRecords[recordKey()] = records;
-    gradeRecords[`${classFilter.value}|${periodFilter.value}`] = records;
+    gradeRecords[periodKey()] = grades;
+    if (Object.keys(dailyCalls).length) gradeRecords[dayKey()] = dailyCalls;
+    else delete gradeRecords[dayKey()];
     localStorage.setItem(GRADE_KEY, JSON.stringify(gradeRecords));
-    showMessage("Notas e frequência salvas com sucesso!", "success");
+    showMessage("Notas do trimestre e chamada do dia salvas!", "success");
+    renderGrades();
 });
 
-getClassNames().forEach(name => {
-    const option = document.createElement("option");
-    option.value = name;
-    option.textContent = name;
-    classFilter.append(option);
-});
+const classNames = [...new Set([...classes, ...students.map(student => student.turma)].filter(Boolean))];
+classNames.sort((a, b) => a.localeCompare(b, "pt-BR"));
+classNames.forEach(name => classFilter.add(new Option(name, name)));
 
 const today = new Date();
+periodFilter.value = today.getMonth() < 4 ? "1º trimestre" : today.getMonth() < 8 ? "2º trimestre" : "3º trimestre";
 attendanceDate.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
-classFilter.addEventListener("change", () => {
-    showMessage("");
-    renderGrades();
-});
-
-periodFilter.addEventListener("change", () => {
-    showMessage("");
-    renderGrades();
-});
-
-attendanceDate.addEventListener("change", () => {
-    showMessage(attendanceDate.value ? "Chamada carregada para o dia selecionado." : "");
-    renderGrades();
-});
+classFilter.addEventListener("change", () => { showMessage(""); renderGrades(); });
+periodFilter.addEventListener("change", () => { showMessage(""); renderGrades(); });
+attendanceDate.addEventListener("change", () => { showMessage(""); renderGrades(); });
 
 markAllPresent.addEventListener("click", () => {
     tableBody.querySelectorAll("tr").forEach(row => {
         row.querySelector(".attendance-status").value = "present";
+        updateRow(row);
     });
-    tableBody.querySelectorAll("tr").forEach(updateRow);
-    showMessage("Todos os alunos foram marcados como presentes.", "success");
+    showMessage("Chamada preenchida com todos presentes. Clique em salvar para registrar.");
 });
-
 markAllAbsent.addEventListener("click", () => {
     tableBody.querySelectorAll("tr").forEach(row => {
-        const statusInput = row.querySelector(".attendance-status");
-        if (statusInput.value !== "absent") {
-            const absenceInput = row.querySelector(".absence-input");
-            absenceInput.value = String((Number(absenceInput.value) || 0) + 1);
-            statusInput.value = "absent";
-        }
+        row.querySelector(".attendance-status").value = "absent";
+        updateRow(row);
     });
-    tableBody.querySelectorAll("tr").forEach(updateRow);
-    showMessage("Todos os alunos foram marcados com uma falta.", "success");
+    showMessage("Chamada preenchida com faltas. Clique em salvar para registrar.");
 });
 
 renderGrades();

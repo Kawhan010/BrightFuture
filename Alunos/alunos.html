@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="alunos.css">
+    <script src="../dados-iniciais.js" defer></script>
     <script src="alunos.js" defer></script>
 </head>
 <body>
@@ -139,6 +140,13 @@
                             <span>Turma</span>
                             <select id="studentClassFilter">
                                 <option value="">Todas as turmas</option>
+                            </select>
+                        </label>
+                        <label class="student-class-filter" for="studentStatusFilter">
+                            <span>Situação</span>
+                            <select id="studentStatusFilter">
+                                <option value="active">Matriculados</option>
+                                <option value="archived">Arquivados</option>
                             </select>
                         </label>
                         <label class="student-search" for="studentSearch">

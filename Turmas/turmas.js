@@ -45,7 +45,7 @@ function renderClasses() {
 
     filteredNames.forEach(name => {
         const total = students.filter(student =>
-            student.turma.toLowerCase() === name.toLowerCase()
+            student.turma.toLowerCase() === name.toLowerCase() && !student.arquivado
         ).length;
 
         const card = document.createElement("article");
@@ -66,7 +66,7 @@ function renderClasses() {
         container.append(card);
     });
 
-    studentCount.textContent = String(students.length);
+    studentCount.textContent = String(students.filter(student => !student.arquivado).length);
     classCount.textContent = String(filteredNames.length);
     emptyState.hidden = filteredNames.length > 0;
 }
