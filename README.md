@@ -2,15 +2,6 @@
 
 Projeto acadêmico baseado no **Estudo de Caso 5 — BrightFuture (Atividade de POO)**.
 
-O projeto original de **Secretaria escolar** foi mantido. Agora possui entrada com usuário e senha, perfis de acesso e boletim escolar para aluno e responsável. Toda a interface utiliza HTML, CSS e JavaScript, sem frameworks nem instalações adicionais.
-
-## Como executar
-
-1. Extraia o ZIP e abra a pasta `BrightFuture` no **VS Code**.
-2. Clique com o botão direito em **`login.html`** e selecione **Open with Live Server**.
-3. Use qualquer login do arquivo **`ACESSOS-PARA-APRESENTACAO.txt`**.
-4. Para trocar de perfil, clique em **Sair**, no menu lateral (também aparece no celular).
-
 ## Contas
 
 | Perfil | Usuário | Senha |
@@ -39,8 +30,6 @@ Na primeira abertura, o sistema carrega **4 turmas**, **13 alunos fictícios** (
 
 As alterações são guardadas no `localStorage` do mesmo navegador, e todos os perfis consultam esses registros. Ao lançar uma nota para Alice como secretaria, por exemplo, ela aparece no boletim de Alice e de Mariana ao trocar de conta.
 
-Os dados desta versão usam chaves `brightfuture.*.v2` no navegador, separadas das versões anteriores. Para voltar ao estado inicial, abra em uma janela anônima nova. **Atenção:** fechar a janela anônima remove os dados salvos nela.
-
 ## Roteiro rápido (5 minutos)
 
 1. Abra `login.html` e entre como `helena.secretaria`.
@@ -68,7 +57,3 @@ Os dados desta versão usam chaves `brightfuture.*.v2` no navegador, separadas d
 A classe `Aluno`, em `Alunos/alunos.js`, contém atributos da matrícula e métodos `arquivar()` e `restaurar()` como exemplo simples de programação orientada a objetos.
 
 O CRUD continua: **Criar** (matricular), **Ler** (consultar), **Atualizar** (editar aluno, nota ou frequência) e **Excluir** (arquivar ou excluir um registro).
-
-## Limites importantes
-
-Esta é uma **simulação acadêmica de login**, não autenticação segura. As senhas e as verificações estão no JavaScript entregue ao navegador, e os dados são salvos localmente, sem servidor, permissões reais ou banco de dados compartilhado. Alguém com acesso às ferramentas de desenvolvedor pode inspecionar ou alterar os registros. **Não use nomes, CPFs, notas ou contatos reais de menores de idade.** Para uma implantação real, seria preciso backend, banco de dados seguro, senhas protegidas, autorização no servidor e adequação à LGPD.
