@@ -1,8 +1,8 @@
 "use strict";
 
-const STUDENT_KEY = "brightfuture.alunos.v1";
-const CLASS_KEY = "brightfuture.turmas.v1";
-const GRADE_KEY = "brightfuture.notas-frequencia.v1";
+const STUDENT_KEY = "brightfuture.alunos.v2";
+const CLASS_KEY = "brightfuture.turmas.v2";
+const GRADE_KEY = "brightfuture.notas-frequencia.v2";
 
 const classFilter = document.querySelector("#reportClassFilter");
 const periodFilter = document.querySelector("#reportPeriodFilter");
@@ -18,13 +18,15 @@ const recordCount = document.querySelector("#reportRecordCount");
 const attentionList = document.querySelector("#attentionList");
 const attentionEmpty = document.querySelector("#attentionEmpty");
 
-const students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]").filter(student => !student.arquivado);
+const auth = window.BrightAuth;
+const students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]")
+    .filter(student => !student.arquivado && auth.canSeeStudent(student));
 const classes = JSON.parse(localStorage.getItem(CLASS_KEY) || "[]");
 const gradeRecords = JSON.parse(localStorage.getItem(GRADE_KEY) || "{}");
 
 function getClassNames() {
     const names = [...classes, ...students.map(student => student.turma)];
-    return [...new Set(names.filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    return [...new Set(names.filter(name => name && auth.canSeeClass(name)))].sort((a, b) => a.localeCompare(b, "pt-BR"));
 }
 
 function getGrade(value) {

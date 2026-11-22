@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#172554">
+    <title>Entrar • BrightFuture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
+    <script src="autenticacao.js"></script>
+    <script src="login.js" defer></script>
+</head>
+<body>
+    <main class="login-layout">
+        <section class="login-intro" aria-label="Colégio BrightFuture">
+            <div class="intro-content">
+                <div class="school-badge"><span class="badge-dot"></span> COLÉGIO BRIGHTFUTURE</div>
+                <div class="brand-card"><img src="assets/logo-5-brightfuture.png" alt="BrightFuture — logomarca do colégio"></div>
+                <h1>Um futuro brilhante começa com uma boa educação.</h1>
+                <p>Seu espaço para acompanhar a vida escolar de forma simples, organizada e acolhedora.</p>
+                <div class="intro-features"><span>✓ Matrículas</span><span>✓ Notas e frequência</span><span>✓ Acompanhamento escolar</span></div>
+            </div>
+            <div class="intro-bottom"><span>✦</span> Cada aluno, um futuro brilhante.</div>
+            <div class="circle-one" aria-hidden="true"></div><div class="circle-two" aria-hidden="true"></div>
+        </section>
+        <section class="login-form-section">
+            <div class="mobile-brand"><img src="assets/logo-5-brightfuture.png" alt="BrightFuture"></div>
+            <div class="form-card">
+                <div class="hello-icon" aria-hidden="true">✦</div>
+                <p class="overline">PORTAL ESCOLAR</p>
+                <h2>Acesse sua conta</h2>
+                <p class="subtitle">Entre com os dados de acesso fornecidos pelo colégio.</p>
+                <form id="loginForm" novalidate>
+                    <label for="loginUser">Usuário</label>
+                    <input id="loginUser" type="text" name="usuario" placeholder="Ex.: helena.secretaria" autocomplete="username" maxlength="60" required autofocus>
+                    <label for="loginPassword">Senha</label>
+                    <div class="password-field"><input id="loginPassword" name="senha" type="password" placeholder="Digite sua senha" autocomplete="current-password" required><button id="togglePassword" type="button" aria-label="Mostrar senha">Mostrar</button></div>
+                    <p id="loginError" class="login-error" role="alert" aria-live="polite"></p>
+                    <button id="submitLogin" class="login-submit" type="submit">Entrar no portal <span aria-hidden="true">→</span></button>
+                </form>
+                <p class="login-help">Não tem acesso? Procure a secretaria da escola.</p>
+            </div>
+            <footer class="form-footer">Colégio BrightFuture · Secretaria escolar digital</footer>
+        </section>
+    </main>
+</body>
+</html>

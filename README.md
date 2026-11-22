@@ -1,48 +1,74 @@
-# BrightFuture — Secretaria escolar
+# BrightFuture — Sistema de Informações do Aluno
 
-Sistema de Informações do Aluno para o Colégio BrightFuture, baseado no **Estudo de Caso 5 — BrightFuture** (Atividade de POO).
+Projeto acadêmico baseado no **Estudo de Caso 5 — BrightFuture (Atividade de POO)**.
 
-## Como abrir
+O projeto original de **Secretaria escolar** foi mantido. Agora possui entrada com usuário e senha, perfis de acesso e boletim escolar para aluno e responsável. Toda a interface utiliza HTML, CSS e JavaScript, sem frameworks nem instalações adicionais.
 
-1. Extraia a pasta e abra-a no VS Code.
-2. Abra `index.html` com a extensão **Live Server**.
-3. Utilize o menu **Visão geral, Alunos, Turmas, Notas e frequência, Relatórios**.
+## Como executar
 
-O perfil exibido é **Secretaria**. A secretaria possui acesso às funcionalidades para facilitar a apresentação. Não é necessário criar contas ou logar.
+1. Extraia o ZIP e abra a pasta `BrightFuture` no **VS Code**.
+2. Clique com o botão direito em **`login.html`** e selecione **Open with Live Server**.
+3. Use qualquer login do arquivo **`ACESSOS-PARA-APRESENTACAO.txt`**.
+4. Para trocar de perfil, clique em **Sair**, no menu lateral (também aparece no celular).
 
-## Conteúdo da secretaria
+## Contas
 
-- **Visão geral:** alunos ativos, turmas, médias das notas cadastradas e frequência do mês.
-- **Alunos:** matrícula, listagem, filtro, busca, edição, arquivamento, restauração e exclusão.
-- **Turmas:** cadastro, consulta, busca e exclusão quando não há alunos vinculados.
-- **Notas e frequência:** nota por trimestre, chamada por data, justificativa e frequência acumulada.
-- **Relatórios:** médias e frequência por turma, alunos que precisam de atenção e impressão.
+| Perfil | Usuário | Senha |
+|---|---|---|
+| Secretaria — Helena Almeida | `helena.secretaria` | `Helena@2026` |
+| Professor — André Ribeiro | `andre.professor` | `Andre@2026` |
+| Coordenação — Juliana Costa | `juliana.coordenacao` | `Juliana@2026` |
+| Aluna — Alice Martins | `alice.aluna` | `Alice@2026` |
+| Responsável — Mariana Martins | `mariana.responsavel` | `Mariana@2026` |
 
-## Roteiro sugerido (2 a 4 minutos)
+O estudo de caso apresenta **secretaria, professores e coordenação** como usuários diretos. Alunos e responsáveis são beneficiários indiretos. O portal individual foi incluído para permitir também demonstrar a consulta de boletins.
 
-1. Mostre **Visão geral** e os indicadores calculados.
-2. Vá em **Alunos**, pesquise por **Alice**, abra **Editar** e altere um contato; salve.
-3. Em **Turmas**, veja o agrupamento dos alunos. Cadastre uma turma, por exemplo, `9º ano B`.
-4. Em **Alunos**, cadastre um novo aluno nessa turma com informações inventadas.
-5. Em **Notas e frequência**, selecione `8º ano A`, confira as notas e registre uma chamada de hoje.
-6. Em **Relatórios**, confira o trimestre atual e veja os estudantes que precisam de atenção.
-7. Em **Alunos**, arquive um registro e utilize o filtro **Arquivados** para restaurá-lo.
+## O que cada perfil faz
 
-## Operações CRUD
+- **Secretaria:** visão da escola, cadastro/edição/arquivamento/exclusão de alunos, cadastro de turmas, notas, frequência e relatórios.
+- **Professor:** visualiza apenas as turmas **8º ano A** e **2º ano EM A**, registra notas trimestrais e chamada por data, acompanha alunos e relatórios das suas turmas. Não edita matrículas.
+- **Coordenação:** consulta informações da escola, notas, frequência e relatórios sem editar registros.
+- **Aluna:** vê sua matrícula e boletim com três trimestres, média e frequência.
+- **Responsável:** acompanha as notas e a frequência da aluna vinculada (Alice).
 
-- **Criar:** matricular alunos e cadastrar turmas.
-- **Ler:** consultar alunos, turmas, notas, frequência e relatórios.
-- **Atualizar:** alterar dados da matrícula, lançar notas e chamadas; restaurar alunos.
-- **Excluir:** arquivar ou remover registro de aluno; excluir turma vazia.
+Os acessos são **predefinidos**; não há cadastro público de contas. Uma escola real cria as contas internamente, não permite que qualquer pessoa se registre como professor.
 
-## Tecnologias e orientação a objetos
+## Dados iniciais
 
-- HTML, CSS e JavaScript, sem frameworks.
-- A classe `Aluno` em `Alunos/alunos.js` reúne os atributos da matrícula e os métodos `arquivar()` e `restaurar()`, exemplo básico de POO.
-- O `localStorage` guarda registros no navegador. O arquivo `dados-iniciais.js` preenche a primeira abertura com **dados completamente inventados** para apresentar o sistema sem tabelas vazias. Não altera dados já cadastrados.
+Na primeira abertura, o sistema carrega **4 turmas**, **13 alunos fictícios** (12 ativos, 1 arquivado), **notas em três trimestres** e **chamadas com faltas e justificativas**. Os registros não são números fixos nas telas: os indicadores são calculados a partir dos dados cadastrados.
 
-## Observações importantes
+As alterações são guardadas no `localStorage` do mesmo navegador, e todos os perfis consultam esses registros. Ao lançar uma nota para Alice como secretaria, por exemplo, ela aparece no boletim de Alice e de Mariana ao trocar de conta.
 
-O Colégio BrightFuture e os registros incluídos são fictícios, conforme o estudo de caso. Esta é uma implementação acadêmica, sem autenticação, banco de dados compartilhado ou proteção de dados adequada ao uso real com menores de idade. **Não utilize informações pessoais verdadeiras.**
+Os dados desta versão usam chaves `brightfuture.*.v2` no navegador, separadas das versões anteriores. Para voltar ao estado inicial, abra em uma janela anônima nova. **Atenção:** fechar a janela anônima remove os dados salvos nela.
 
-Se você já utilizou versões anteriores do projeto no mesmo endereço do Live Server, o navegador preservará os dados antigos. Para abrir com os registros originais desta versão, utilize uma janela anônima nova ou limpe apenas o armazenamento local desse site (isso apaga os registros salvos anteriormente naquele navegador).
+## Roteiro rápido (5 minutos)
+
+1. Abra `login.html` e entre como `helena.secretaria`.
+2. Mostre as turmas, os alunos cadastrados e os indicadores do painel.
+3. Edite o telefone de um responsável; mostre que o registro fica salvo.
+4. Acesse **Notas e frequência**, selecione **1º ano A**, altere a nota de Alice no **3º trimestre** e salve.
+5. Saia e entre como `alice.aluna`: abra **Meu boletim** e confira a nova nota.
+6. Saia e entre como `mariana.responsavel`: mostre que acompanha o mesmo boletim.
+7. Entre como `andre.professor`: ele visualiza apenas as turmas atribuídas e pode salvar uma chamada.
+8. Entre como `juliana.coordenacao`: mostre os relatórios e que os campos de lançamento não podem ser editados.
+
+## Organização das pastas
+
+- `login.html`, `login.css`, `login.js`: tela de entrada com a logo original.
+- `autenticacao.js`: contas, login, sessão e regras simples de acesso.
+- `app-ui.js`, `acesso.css`: menu, perfil exibido e botão de sair.
+- `dados-iniciais.js`: turmas, alunos, notas e chamadas fictícias da primeira abertura.
+- `index.html`, `script.js`, `style.css`: página inicial original, personalizada pelo perfil.
+- `Alunos/`, `Turmas/`, `Notas/`, `Relatorios/`: páginas originais da secretaria, com visual preservado.
+- `Boletim/`: área de consulta do aluno e do responsável.
+- `assets/`: logo original da escola.
+
+## POO e CRUD
+
+A classe `Aluno`, em `Alunos/alunos.js`, contém atributos da matrícula e métodos `arquivar()` e `restaurar()` como exemplo simples de programação orientada a objetos.
+
+O CRUD continua: **Criar** (matricular), **Ler** (consultar), **Atualizar** (editar aluno, nota ou frequência) e **Excluir** (arquivar ou excluir um registro).
+
+## Limites importantes
+
+Esta é uma **simulação acadêmica de login**, não autenticação segura. As senhas e as verificações estão no JavaScript entregue ao navegador, e os dados são salvos localmente, sem servidor, permissões reais ou banco de dados compartilhado. Alguém com acesso às ferramentas de desenvolvedor pode inspecionar ou alterar os registros. **Não use nomes, CPFs, notas ou contatos reais de menores de idade.** Para uma implantação real, seria preciso backend, banco de dados seguro, senhas protegidas, autorização no servidor e adequação à LGPD.

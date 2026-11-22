@@ -1,9 +1,9 @@
 "use strict";
 
 // Dados salvos no navegador com localStorage.
-const STUDENT_KEY = "brightfuture.alunos.v1";
-const CLASS_KEY = "brightfuture.turmas.v1";
-const GRADE_KEY = "brightfuture.notas-frequencia.v1";
+const STUDENT_KEY = "brightfuture.alunos.v2";
+const CLASS_KEY = "brightfuture.turmas.v2";
+const GRADE_KEY = "brightfuture.notas-frequencia.v2";
 
 const form = document.querySelector("#studentForm");
 const nameInput = document.querySelector("#studentName");
@@ -47,7 +47,9 @@ class Aluno {
 }
 
 // Ao carregar JSON, recriamos os objetos da classe Aluno.
-let students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]").map(dados => new Aluno(dados));
+const auth = window.BrightAuth;
+const canEdit = auth.canManageStudents();
+let students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]").map(dados => new Aluno(dados)).filter(student => auth.canSeeStudent(student));
 let classes = JSON.parse(localStorage.getItem(CLASS_KEY) || "[]");
 let editingId = null;
 
@@ -138,16 +140,21 @@ function renderStudents() {
         row.children[3].textContent = student.turma;
         row.children[4].textContent = student.responsavel || "—";
         row.children[5].textContent = student.contato || "—";
+        if (auth.user.papel === "professor") [1, 4, 5].forEach(i => row.children[i].hidden = true);
 
         const actions = document.createElement("div");
         actions.className = "student-row-actions";
-        if (archived) {
-            actions.append(createAction("Restaurar", "restore", student.id, "restore"));
+        if (canEdit) {
+            if (archived) {
+                actions.append(createAction("Restaurar", "restore", student.id, "restore"));
+            } else {
+                actions.append(createAction("Editar", "edit", student.id));
+                actions.append(createAction("Arquivar", "archive", student.id, "archive"));
+            }
+            actions.append(createAction("Excluir", "delete", student.id, "delete"));
         } else {
-            actions.append(createAction("Editar", "edit", student.id));
-            actions.append(createAction("Arquivar", "archive", student.id, "archive"));
+            actions.textContent = "Consulta";
         }
-        actions.append(createAction("Excluir", "delete", student.id, "delete"));
         row.children[6].append(actions);
         tableBody.append(row);
     });
@@ -169,6 +176,7 @@ guardianCpfInput.addEventListener("input", () => guardianCpfInput.value = format
 
 form.addEventListener("submit", event => {
     event.preventDefault();
+    if (!canEdit) return;
     const student = new Aluno({
         id: editingId || createId(),
         nome: nameInput.value.trim(),
@@ -214,7 +222,7 @@ form.addEventListener("submit", event => {
 
 tableBody.addEventListener("click", event => {
     const button = event.target.closest("button[data-action]");
-    if (!button) return;
+    if (!button || !canEdit) return;
     const student = students.find(item => item.id === button.dataset.id);
     if (!student) return;
 
@@ -274,4 +282,17 @@ searchInput.addEventListener("input", renderStudents);
 classFilter.addEventListener("change", renderStudents);
 statusFilter.addEventListener("change", renderStudents);
 fillClassOptions();
+if (!canEdit) {
+    form.hidden = true;
+    if (auth.user.papel === "professor") {
+        statusFilter.closest("label").hidden = true;
+        document.querySelectorAll(".students-table th:nth-child(2), .students-table th:nth-child(5), .students-table th:nth-child(6)")
+            .forEach(cell => cell.hidden = true);
+    }
+    const note = document.createElement("p");
+    note.className = "role-note";
+    note.textContent = auth.user.papel === "professor" ? "Consulte os alunos das suas turmas. As matrículas são administradas pela secretaria." :
+        "Consulta de matrículas e contatos. Alterações cadastrais são feitas pela secretaria.";
+    form.before(note);
+}
 renderStudents();

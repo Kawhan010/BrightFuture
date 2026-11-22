@@ -1,8 +1,8 @@
 "use strict";
 
-const STUDENT_KEY = "brightfuture.alunos.v1";
-const CLASS_KEY = "brightfuture.turmas.v1";
-const GRADE_KEY = "brightfuture.notas-frequencia.v1";
+const STUDENT_KEY = "brightfuture.alunos.v2";
+const CLASS_KEY = "brightfuture.turmas.v2";
+const GRADE_KEY = "brightfuture.notas-frequencia.v2";
 
 const classFilter = document.querySelector("#classFilter");
 const periodFilter = document.querySelector("#periodFilter");
@@ -20,7 +20,9 @@ const attentionCount = document.querySelector("#attentionCount");
 const markAllPresent = document.querySelector("#markAllPresent");
 const markAllAbsent = document.querySelector("#markAllAbsent");
 
-const students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]");
+const auth = window.BrightAuth;
+const canEdit = auth.canEditGrades();
+const students = JSON.parse(localStorage.getItem(STUDENT_KEY) || "[]").filter(student => auth.canSeeStudent(student));
 const classes = JSON.parse(localStorage.getItem(CLASS_KEY) || "[]");
 let gradeRecords = JSON.parse(localStorage.getItem(GRADE_KEY) || "{}");
 
@@ -159,6 +161,11 @@ function renderGrades() {
         row.querySelector(".attendance-status").value = call.status || "";
         row.querySelector(".justification-input").value = call.justificativa || "";
         row.querySelector(".justification-input").setAttribute("aria-label", `Justificativa de ${student.nome}`);
+        if (!canEdit) {
+            row.querySelector(".grade-input").readOnly = true;
+            row.querySelector(".justification-input").readOnly = true;
+            row.querySelectorAll(".attendance-toggle-button").forEach(button => button.disabled = true);
+        }
 
         const gradeInput = row.querySelector(".grade-input");
         gradeInput.addEventListener("input", () => {
@@ -184,13 +191,14 @@ function renderGrades() {
 
     emptyState.textContent = classFilter.value ? "Esta turma não tem alunos matriculados." : "Selecione uma turma para visualizar os alunos.";
     emptyState.hidden = activeStudents.length > 0;
-    saveButton.disabled = activeStudents.length === 0;
-    markAllPresent.disabled = activeStudents.length === 0;
-    markAllAbsent.disabled = activeStudents.length === 0;
+    saveButton.disabled = !canEdit || activeStudents.length === 0;
+    markAllPresent.disabled = !canEdit || activeStudents.length === 0;
+    markAllAbsent.disabled = !canEdit || activeStudents.length === 0;
     updateSummary();
 }
 
 saveButton.addEventListener("click", () => {
+    if (!canEdit || !auth.canSeeClass(classFilter.value)) return;
     if (!classFilter.value || !attendanceDate.value) {
         showMessage("Selecione a turma e o dia da chamada.", "error");
         return;
@@ -228,7 +236,7 @@ saveButton.addEventListener("click", () => {
 
 const classNames = [...new Set([...classes, ...students.map(student => student.turma)].filter(Boolean))];
 classNames.sort((a, b) => a.localeCompare(b, "pt-BR"));
-classNames.forEach(name => classFilter.add(new Option(name, name)));
+classNames.filter(name => auth.canSeeClass(name)).forEach(name => classFilter.add(new Option(name, name)));
 
 const today = new Date();
 periodFilter.value = today.getMonth() < 4 ? "1º trimestre" : today.getMonth() < 8 ? "2º trimestre" : "3º trimestre";
@@ -239,6 +247,7 @@ periodFilter.addEventListener("change", () => { showMessage(""); renderGrades();
 attendanceDate.addEventListener("change", () => { showMessage(""); renderGrades(); });
 
 markAllPresent.addEventListener("click", () => {
+    if (!canEdit) return;
     tableBody.querySelectorAll("tr").forEach(row => {
         row.querySelector(".attendance-status").value = "present";
         updateRow(row);
@@ -246,6 +255,7 @@ markAllPresent.addEventListener("click", () => {
     showMessage("Chamada preenchida com todos presentes. Clique em salvar para registrar.");
 });
 markAllAbsent.addEventListener("click", () => {
+    if (!canEdit) return;
     tableBody.querySelectorAll("tr").forEach(row => {
         row.querySelector(".attendance-status").value = "absent";
         updateRow(row);
@@ -253,4 +263,12 @@ markAllAbsent.addEventListener("click", () => {
     showMessage("Chamada preenchida com faltas. Clique em salvar para registrar.");
 });
 
+if (!canEdit) {
+    document.querySelector(".attendance-toolbar").hidden = true;
+    document.querySelector(".grades-actions").hidden = true;
+    const note = document.createElement("p");
+    note.className = "role-note";
+    note.textContent = "Consulta de notas e frequência. Os lançamentos são feitos pelos professores e pela secretaria.";
+    document.querySelector(".grades-filters").before(note);
+}
 renderGrades();

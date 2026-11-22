@@ -3,9 +3,9 @@
 // Registros totalmente inventados para a apresentação acadêmica.
 // Só são criados na PRIMEIRA execução: nunca substituem os dados cadastrados.
 (function iniciarEscola() {
-    const alunoKey = "brightfuture.alunos.v1";
-    const turmaKey = "brightfuture.turmas.v1";
-    const notaKey = "brightfuture.notas-frequencia.v1";
+    const alunoKey = "brightfuture.alunos.v2";
+    const turmaKey = "brightfuture.turmas.v2";
+    const notaKey = "brightfuture.notas-frequencia.v2";
     if (localStorage.getItem(alunoKey) !== null ||
         localStorage.getItem(turmaKey) !== null ||
         localStorage.getItem(notaKey) !== null) return;
