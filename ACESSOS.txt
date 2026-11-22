@@ -1,0 +1,48 @@
+BRIGHTFUTURE — ACESSOS
+========================================
+
+Perfil: Secretaria (Helena Almeida)
+Usuário: helena.secretaria
+Senha: Helena@2026
+Acesso: matrículas, turmas, notas, frequência e relatórios; pode cadastrar, editar e arquivar alunos.
+
+Perfil: Professor (André Ribeiro)
+Usuário: andre.professor
+Senha: Andre@2026
+Acesso: 8º ano A e 2º ano EM A; lança notas e chamada; consulta alunos e relatórios dessas turmas.
+
+Perfil: Coordenação (Juliana Costa)
+Usuário: juliana.coordenacao
+Senha: Juliana@2026
+Acesso: consulta a alunos, turmas, notas, frequência e relatórios; não altera registros.
+
+Perfil: Aluna (Alice Martins)
+Usuário: alice.aluna
+Senha: Alice@2026
+Acesso: painel pessoal e boletim da própria matrícula.
+
+Perfil: Responsável (Mariana Martins)
+Usuário: mariana.responsavel
+Senha: Mariana@2026
+Acesso: painel pessoal e boletim da filha Alice Martins.
+
+COMO ENTRAR
+-----------
+Abra login.html usando a extensão Live Server do VS Code.
+Ou abra index.html: sem sessão ativa, o sistema abre o login automaticamente.
+Os usuários são predefinidos para o trabalho de faculdade; não há registro público.
+
+DADOS JÁ INCLUÍDOS
+------------------
+- 4 turmas cadastradas.
+- 13 alunos com dados fictícios (12 matriculados e 1 arquivado).
+- Notas em 3 trimestres.
+- Chamadas de dias letivos e algumas faltas e justificativas.
+- O boletim de Alice e da responsável Mariana consulta os mesmos lançamentos feitos pela escola.
+
+IMPORTANTE
+----------
+Este login é feito apenas no navegador, com credenciais no código.
+Permissões são demonstrativas e NÃO protegem dados reais nem substituem um servidor seguro.
+Não use informações verdadeiras de crianças, familiares ou professores.
+Todos os usuários compartilham os dados salvos no MESMO navegador, pelo localStorage.
